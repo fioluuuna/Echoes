@@ -2,13 +2,41 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Compass, Book as BookIcon, Flower2, Clock, LogOut, Sun, Moon } from 'lucide-react';
+import { Compass, Book as BookIcon, Flower2, Clock, LogOut, Sun, Moon, Sparkles } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuthStore } from '../../stores/authStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useEntryStore } from '../../stores/entryStore';
 import { EmotionPicker } from '../entry/EmotionPicker';
 import { SurrealBackground } from './SurrealBackground';
+
+// 日记模板数据
+const diaryTemplates = [
+  {
+    id: 1,
+    title: '晨间冥想',
+    content: '清晨醒来，窗外的鸟鸣声轻柔地唤醒了我的意识。今天的世界似乎格外清晰，阳光透过窗帘的缝隙在地板上投下斑驳的光影。我深吸一口气，感受着新一天的开始...',
+    emotion: '平静'
+  },
+  {
+    id: 2,
+    title: '雨夜思绪',
+    content: '窗外的雨声淅淅沥沥，像是天空在诉说着什么。我坐在窗前，看着雨水在玻璃上蜿蜒而下，心中涌起一种莫名的宁静。这雨声让我想起了...',
+    emotion: '思念'
+  },
+  {
+    id: 3,
+    title: '城市黄昏',
+    content: '下班路上，夕阳的余晖洒满了整个城市。车水马龙中，每个人都匆忙地奔向自己的目的地。我站在路口，看着这熟悉又陌生的街景，忽然意识到自己已经...',
+    emotion: '疲惫'
+  },
+  {
+    id: 4,
+    title: '星空独白',
+    content: '今晚的星空格外璀璨，我抬头仰望，那些遥远的星辰仿佛在诉说着古老的故事。在这浩瀚宇宙面前，我的烦恼显得如此渺小。或许，生活本该如此...',
+    emotion: '孤独'
+  },
+];
 
 interface BookLayoutProps {
   children: ReactNode;
@@ -20,8 +48,8 @@ export function BookLayout({ children }: BookLayoutProps) {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
-  const { draftEmotion, setDraftEmotion } = useEntryStore();
-  
+  const { draftEmotion, setDraftEmotion, fillFromTemplate } = useEntryStore();
+
   const isDark = theme === 'dark';
 
   const navItems = [
@@ -60,11 +88,46 @@ export function BookLayout({ children }: BookLayoutProps) {
             </div>
           </div>
           
-          <div className="flex-1 flex flex-col items-center justify-center relative z-20 pointer-events-auto mt-12" style={{ transform: "translateZ(30px)" }}>
+          <div className="flex-1 flex flex-col items-center justify-center relative z-20 pointer-events-auto" style={{ transform: "translateZ(30px)" }}>
             <h2 className="text-sm text-[#4c849e] mb-8 font-serif tracking-widest text-shadow-sm">【 观照微尘 · 觉察本心 】</h2>
-            <div className="scale-100 md:scale-110 transform-gpu origin-center">
+            <div className="scale-100 md:scale-110 transform-gpu origin-center mb-10">
               <EmotionPicker selected={draftEmotion} onSelect={setDraftEmotion} />
             </div>
+
+            {/* 日记模板 */}
+            {location.pathname === '/' && (
+              <div className="w-full max-w-[300px] mt-6">
+                <div className="flex items-center gap-2 mb-3 px-2">
+                  <Sparkles className="w-3 h-3 text-[#8adefa]" />
+                  <span className="text-xs font-serif tracking-widest text-[#7bb0c9]">灵感篇章</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {diaryTemplates.map((template, index) => (
+                    <motion.button
+                      key={template.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 + index * 0.08 }}
+                      onClick={() => fillFromTemplate(template.content, template.emotion)}
+                      className="text-left p-2.5 rounded-lg border border-[#8adefa]/20 bg-[#0b162c]/40 hover:bg-[#8adefa]/10 hover:border-[#8adefa]/40 transition-all group pointer-events-auto"
+                      style={{ transform: "translateZ(5px)" }}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-serif text-[#d0eaf8] group-hover:text-[#8adefa] transition-colors truncate">
+                          {template.title}
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#8adefa]/10 text-[#7bb0c9] border border-[#8adefa]/20 whitespace-nowrap ml-1">
+                          {template.emotion}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#4c849e] line-clamp-2 font-serif leading-relaxed">
+                        {template.content.slice(0, 28)}...
+                      </p>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ transform: "translateZ(10px)" }} className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">

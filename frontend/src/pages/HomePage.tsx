@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BookLoadingAnimation } from '../components/common/BookLoadingAnimation';
@@ -16,11 +16,19 @@ interface Sticker {
 
 export function HomePage() {
   const navigate = useNavigate();
-  const { setCurrentResult, isLoading, setLoading, draftEmotion } = useEntryStore();
+  const { setCurrentResult, isLoading, setLoading, draftEmotion, draftContent, setDraftContent } = useEntryStore();
 
   const [content, setContent] = useState('');
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 当 draftContent 改变时，填充到输入框
+  useEffect(() => {
+    if (draftContent) {
+      setContent(draftContent);
+      setDraftContent(null); // 清空模板内容，避免重复填充
+    }
+  }, [draftContent, setDraftContent]);
 
   const handleSubmit = async () => {
     if (content.length < 1) return;

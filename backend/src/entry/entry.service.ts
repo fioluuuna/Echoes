@@ -12,9 +12,7 @@ import { Passage } from '../literature/entities/passage.entity';
 interface MatchResult {
   passage: Passage;
   score: number;
-  emotionSimilarity: number;
-  keywordOverlap: number;
-  imageryMatch: number;
+  reason: string;
 }
 
 @Injectable()
@@ -57,10 +55,10 @@ export class EntryService {
 
     // 3. 匹配文学段落
     this.logger.log('开始匹配文学段落...');
-    const matchResults = await this.matchPassages(analysis);
+    const matchResults = await this.matchPassages(analysis, content);
 
-    // 4. 保存匹配结果并生成匹配原因
-    const matches = await this.saveMatches(savedEntry, matchResults, content);
+    // 4. 保存匹配结果
+    const matches = await this.saveMatches(savedEntry, matchResults);
 
     // 5. 更新花园（植物成长）
     const gardenUpdates = await this.updateGarden(userId, matchResults);
@@ -79,9 +77,10 @@ export class EntryService {
     };
   }
 
-  // 匹配文学段落
+  // 匹配文学段落（使用 AI 智能匹配）
   private async matchPassages(
     analysis: EmotionAnalysisResult,
+    userContent?: string,
   ): Promise<MatchResult[]> {
     // 获取所有段落
     const passages = await this.literatureService.getAllPassages();
@@ -90,74 +89,40 @@ export class EntryService {
       return [];
     }
 
-    // 计算每个段落的匹配分数
-    const scoredPassages = passages.map((passage) => {
-      const emotionSimilarity = this.calculateEmotionSimilarity(
-        analysis.emotions.map((e) => e.name),
-        passage.emotionTags || [],
-      );
-      const keywordOverlap = this.calculateOverlap(
-        analysis.keywords,
-        [...(passage.emotionTags || []), ...(passage.themeTags || [])],
-      );
-      const imageryMatch = this.calculateOverlap(
-        analysis.imagery,
-        passage.imageryTags || [],
-      );
-      const sceneMatch = this.calculateOverlap(
-        analysis.scenes,
-        passage.sceneTags || [],
-      );
+    this.logger.log(`开始 AI 匹配 ${passages.length} 个文学段落...`);
 
-      // 综合得分
-      const score =
-        emotionSimilarity * 0.4 +
-        keywordOverlap * 0.3 +
-        imageryMatch * 0.2 +
-        sceneMatch * 0.1;
-
+    // 并行处理所有段落的 AI 匹配
+    const matchPromises = passages.map(async (passage) => {
+      const result = await this.aiService.aiMatchPassage(
+        userContent || analysis.keywords.join('，'),
+        passage.content,
+        passage.author?.name || '佚名',
+        passage.work?.title || '未知作品',
+      );
       return {
         passage,
-        score,
-        emotionSimilarity,
-        keywordOverlap,
-        imageryMatch,
+        score: result.score,
+        reason: result.reason,
       };
     });
 
-    // 排序并返回Top 3
-    return scoredPassages
+    // 等待所有匹配完成
+    const scoredPassages = await Promise.all(matchPromises);
+
+    // 排序并返回 Top 3
+    const topMatches = scoredPassages
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
-  }
 
-  // 计算情感相似度
-  private calculateEmotionSimilarity(
-    userEmotions: string[],
-    passageEmotions: string[],
-  ): number {
-    if (!userEmotions.length || !passageEmotions.length) return 0;
-    const intersection = userEmotions.filter((e) =>
-      passageEmotions.includes(e),
-    );
-    return intersection.length / Math.max(userEmotions.length, 1);
-  }
+    this.logger.log(`AI 匹配完成，Top 3 匹配度: ${topMatches.map(m => `${m.score.toFixed(2)} (${m.passage.author?.name})`).join(', ')}`);
 
-  // 计算重合度
-  private calculateOverlap(arr1: string[], arr2: string[]): number {
-    if (!arr1?.length || !arr2?.length) return 0;
-    const set2 = new Set(arr2.map((s) => s.toLowerCase()));
-    const intersection = arr1.filter((item) =>
-      set2.has(item.toLowerCase()),
-    );
-    return intersection.length / Math.max(arr1.length, 1);
+    return topMatches;
   }
 
   // 保存匹配结果
   private async saveMatches(
     entry: Entry,
     matchResults: MatchResult[],
-    userContent: string,
   ): Promise<any[]> {
     const matches: any[] = [];
 
@@ -165,22 +130,17 @@ export class EntryService {
       const result = matchResults[i];
       const passage = result.passage;
 
-      // 生成匹配原因
-      const matchReason = await this.aiService.generateMatchReason(
-        userContent,
-        passage.content,
-        passage.author?.name || '佚名',
-        passage.work?.title || '未知作品',
-      );
+      // 使用 AI 已生成的匹配原因
+      const matchReason = result.reason;
 
       const match = this.matchRepository.create({
         entryId: entry.id,
         passageId: passage.id,
         matchScore: result.score,
         matchReason,
-        emotionSimilarity: result.emotionSimilarity,
-        keywordOverlap: result.keywordOverlap,
-        imageryMatch: result.imageryMatch,
+        emotionSimilarity: result.score, // AI 综合评分
+        keywordOverlap: 0, // 不再使用
+        imageryMatch: 0, // 不再使用
         rank: i + 1,
       });
       const savedMatch = await this.matchRepository.save(match);

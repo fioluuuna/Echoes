@@ -21,10 +21,10 @@ export function GardenUpdateCard({ updates }: GardenUpdateCardProps) {
 
   return (
     <GlassCard className={clsx(
-      "!bg-gradient-to-br backdrop-blur-md border",
+      "backdrop-blur-md border",
       isDark
-        ? "!from-[#02050f]/80 !to-[#0b162c]/80 border-[#8adefa]/20 shadow-[0_0_20px_rgba(138,222,250,0.1)]"
-        : "!from-sky-50 !to-blue-50 border-sky-200"
+        ? "!bg-[#05080f]/80 border-[#8adefa]/20 shadow-[0_0_20px_rgba(138,222,250,0.1)]"
+        : "!bg-white border-gray-200"
     )}>
       <div className={clsx(
         "flex items-center gap-3 mb-6 border-b pb-4",

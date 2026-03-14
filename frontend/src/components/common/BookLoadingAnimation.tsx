@@ -237,7 +237,7 @@ export function BookLoadingAnimation() {
             )}
             style={{ textShadow: "0 0 20px rgba(138,222,250,0.3)" }}
           >
-            答案之书正在翻阅
+            世界正在写给你
           </motion.h2>
           
           <motion.div className="flex items-center justify-center gap-4 mb-6">

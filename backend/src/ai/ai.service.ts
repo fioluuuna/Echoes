@@ -182,6 +182,71 @@ ${passageContent}
     }
   }
 
+  /**
+   * AI 智能匹配 - 评估用户日记与文学段落的匹配度
+   * 返回匹配分数 (0-1) 和匹配原因
+   */
+  async aiMatchPassage(
+    userContent: string,
+    passageContent: string,
+    authorName: string,
+    workTitle: string,
+  ): Promise<{ score: number; reason: string }> {
+    const prompt = `你是一个专业的文学共鸣分析专家。请分析用户日记与文学段落之间的情感共鸣程度。
+
+用户日记：
+"""
+${userContent}
+"""
+
+文学段落：
+"""
+${passageContent}
+"""
+作者：${authorName}
+作品：${workTitle}
+
+请从以下维度评估匹配度（0-100分）：
+1. 情感共鸣：两者表达的情感是否相似或互补
+2. 意境相通：场景、意象是否有相似之处
+3. 主题契合：探讨的主题是否相关
+4. 心理投射：文学段落是否能折射出用户的内心状态
+
+返回 JSON 格式（只返回 JSON，不要有其他内容）：
+{
+  "score": 0-100之间的数值,
+  "reason": "50-100字的匹配原因说明，用温暖诗意的语言解释共鸣点"
+}
+
+评分标准：
+- 90-100分：情感高度共鸣，意境完美契合
+- 70-89分：情感有明显共鸣，有较多相似之处
+- 50-69分：情感有一定关联，存在共鸣点
+- 30-49分：情感较弱关联，仅有细微共鸣
+- 0-29分：几乎无共鸣，关联性很低`;
+
+    try {
+      const response = await this.callQwen(prompt);
+      // 解析 JSON 响应
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const result = JSON.parse(jsonMatch[0]);
+        return {
+          score: Math.min(100, Math.max(0, result.score || 50)) / 100,
+          reason: result.reason || '这段文字与你的心情产生了深深的共鸣。',
+        };
+      }
+      throw new Error('无法解析 AI 响应');
+    } catch (error) {
+      this.logger.error('AI 匹配失败', error);
+      // 返回默认值
+      return {
+        score: 0.5,
+        reason: '这段文字与你的心情产生了深深的共鸣。',
+      };
+    }
+  }
+
   // 生成文本向量嵌入
   async generateEmbedding(text: string): Promise<number[]> {
     try {
