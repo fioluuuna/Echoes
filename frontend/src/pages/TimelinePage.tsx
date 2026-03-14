@@ -6,10 +6,16 @@ import { statsApi } from '../services/api';
 import { Loading } from '../components/common/Loading';
 import { GlassCard } from '../components/ui/GlassCard';
 import { useThemeStore } from '../stores/themeStore';
-import { WEATHER_MAP } from '../types';
+import { EMOTIONS } from '../types';
 import type { EmotionCurveData, TimelineItem } from '../types';
 import { Calendar, Activity, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
+
+// 获取情绪对应的 emoji
+const getEmotionEmoji = (emotionName: string) => {
+  const found = EMOTIONS.find(e => e.name === emotionName);
+  return found?.emoji || '💭';
+};
 
 export function TimelinePage() {
   const [curveData, setCurveData] = useState<EmotionCurveData[]>([]);
@@ -73,7 +79,7 @@ export function TimelinePage() {
         type: 'line',
         smooth: true,
         data: curveData.map((d) => d.intensity),
-        lineStyle: { color: '#8b5cf6', width: 3, shadowColor: 'rgba(139, 92, 246, 0.3)', shadowBlur: 10 },
+        lineStyle: { color: '#38bdf8', width: 3, shadowColor: 'rgba(56, 189, 248, 0.3)', shadowBlur: 10 },
         areaStyle: {
           color: {
             type: 'linear',
@@ -82,14 +88,14 @@ export function TimelinePage() {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(139, 92, 246, 0.2)' },
-              { offset: 1, color: 'rgba(139, 92, 246, 0)' },
+              { offset: 0, color: 'rgba(56, 189, 248, 0.2)' },
+              { offset: 1, color: 'rgba(56, 189, 248, 0)' },
             ],
           },
         },
         symbol: 'circle',
         symbolSize: 6,
-        itemStyle: { color: isDark ? '#1e1b2e' : '#ffffff', borderColor: '#8b5cf6', borderWidth: 2 },
+        itemStyle: { color: isDark ? '#0f1b2d' : '#ffffff', borderColor: '#38bdf8', borderWidth: 2 },
       },
     ],
   };
@@ -104,17 +110,17 @@ export function TimelinePage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">时间线</h1>
-          <p className="text-[var(--text-muted)]">你的情感旅程。</p>
+          <h1 className="text-3xl font-bold text-[#d0eaf8] mb-2">情绪曲线</h1>
+          <p className="text-[#7bb0c9]">根据你的情绪高低变化。</p>
         </div>
         <div className="hidden md:block">
           <div className={clsx(
             "p-3 rounded-full border",
             isDark
-              ? "bg-purple-900/20 border-purple-500/20"
-              : "bg-purple-100 border-purple-200"
+              ? "bg-sky-900/20 border-sky-500/20"
+              : "bg-sky-100 border-sky-200"
           )}>
-            <Calendar className="w-6 h-6 text-[var(--accent-primary)]" />
+            <Calendar className="w-6 h-6 text-[#8adefa]" />
           </div>
         </div>
       </motion.div>
@@ -128,8 +134,8 @@ export function TimelinePage() {
         >
           <GlassCard className="p-6">
             <div className="flex items-center gap-2 mb-6">
-              <Activity className="w-5 h-5 text-[var(--accent-primary)]" />
-              <h2 className="text-lg font-medium text-[var(--text-primary)]">30天情绪曲线</h2>
+              <Activity className="w-5 h-5 text-[#8adefa]" />
+              <h2 className="text-lg font-medium text-[#d0eaf8]">30天情绪曲线</h2>
             </div>
             <ReactECharts option={chartOption} style={{ height: 300 }} />
           </GlassCard>
@@ -146,7 +152,7 @@ export function TimelinePage() {
 
         {timeline.length > 0 ? (
           timeline.map((item, index) => {
-            const weather = WEATHER_MAP[item.weather] || WEATHER_MAP['多云'];
+            const emotionEmoji = getEmotionEmoji(item.emotion);
             const date = new Date(item.date);
             const dateStr = date.toLocaleDateString('zh-CN', {
               month: 'short',
@@ -165,12 +171,12 @@ export function TimelinePage() {
                 <div className={clsx(
                   "absolute left-[29px] top-6 w-3 h-3 rounded-full border-2 z-10 group-hover:scale-125 transition-transform",
                   isDark
-                    ? "bg-[#1e1b2e] border-purple-500"
-                    : "bg-white border-purple-500"
+                    ? "bg-[#0f1b2d] border-sky-500"
+                    : "bg-white border-sky-500"
                 )} />
 
                 {/* Time Label */}
-                <div className="absolute left-0 top-5 text-xs text-[var(--text-muted)] font-medium w-6 text-center">
+                <div className="absolute left-0 top-5 text-xs text-[#7bb0c9] font-medium w-6 text-center">
                   {dateStr.split(' ')[0]} <br /> {dateStr.split(' ')[1]}
                 </div>
 
@@ -180,32 +186,34 @@ export function TimelinePage() {
                     className={clsx(
                       "p-4 transition-all duration-300",
                       isDark
-                        ? "group-hover:border-purple-500/30"
-                        : "group-hover:border-purple-300"
+                        ? "group-hover:border-sky-500/30"
+                        : "group-hover:border-sky-300"
                     )}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div className={clsx(
-                          "text-xl p-1.5 rounded-lg",
+                          "text-2xl p-2 rounded-lg",
                           isDark ? "bg-white/5" : "bg-black/5"
                         )}>
-                          {weather.icon}
+                          {emotionEmoji}
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--text-primary)]">{item.emotion}</p>
-                          <p className="text-xs text-[var(--text-muted)]">{weather.name}</p>
+                          <p className="font-medium text-[#d0eaf8]">{item.emotion}</p>
+                          <p className="text-xs text-[#7bb0c9]">
+                            {date.toLocaleDateString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
                         </div>
                       </div>
                       <ChevronRight className={clsx(
                         "w-5 h-5 group-hover:translate-x-1 transition-all",
                         isDark
-                          ? "text-slate-600 group-hover:text-purple-400"
-                          : "text-gray-300 group-hover:text-purple-500"
+                          ? "text-slate-600 group-hover:text-sky-400"
+                          : "text-gray-300 group-hover:text-sky-500"
                       )} />
                     </div>
 
-                    <p className="text-[var(--text-secondary)] text-sm line-clamp-2 leading-relaxed">
+                    <p className="text-[#a0c4d4] text-sm line-clamp-2 leading-relaxed">
                       {item.preview}
                     </p>
 
@@ -215,7 +223,7 @@ export function TimelinePage() {
                         isDark ? "border-white/5" : "border-black/5"
                       )}>
                         {item.keywords.slice(0, 3).map((keyword) => (
-                          <span key={keyword} className="text-xs text-[var(--text-muted)]">
+                          <span key={keyword} className="text-xs text-[#7bb0c9]">
                             #{keyword}
                           </span>
                         ))}
@@ -228,7 +236,7 @@ export function TimelinePage() {
           })
         ) : (
           <div className="text-center py-20 pl-20">
-            <p className="text-[var(--text-muted)]">时间似乎在这里静止了。</p>
+            <p className="text-[#7bb0c9]">时间似乎在这里静止了。</p>
           </div>
         )}
       </div>

@@ -98,4 +98,20 @@ export const literatureApi = {
     api.get<any, ApiResponse<any>>(`/passages/${id}`),
 };
 
+// AI相关
+export const aiApi = {
+  // 生成场景图片
+  generateImage: (data: { prompt: string; style?: string }) =>
+    api.post<any, ApiResponse<{ imageUrl: string; taskId: string }>>('/ai/generate-image', data),
+
+  // 根据日记内容生成场景描述
+  generateScenePrompt: (data: {
+    content: string;
+    emotion: string;
+    keywords: string[];
+    imagery: string[];
+  }) =>
+    api.post<any, ApiResponse<{ prompt: string }>>('/ai/generate-scene-prompt', data),
+};
+
 export default api;

@@ -1,34 +1,26 @@
-import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
-import * as express from 'express';
+import { Controller, Get, Query } from '@nestjs/common';
 import { StatsService } from './stats.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiResponse } from '../common/dto/api-response.dto';
 
-// 认证请求接口
-interface AuthRequest extends express.Request {
-  user: { userId: number; username: string };
-}
+// 默认用户ID（移除登录后使用）
+const DEFAULT_USER_ID = 1;
 
 @Controller('stats')
-@UseGuards(JwtAuthGuard)
 export class StatsController {
   constructor(private statsService: StatsService) { }
 
   @Get('overview')
-  async getOverview(@Req() req: express.Request) {
-    const authReq = req as AuthRequest;
-    const overview = await this.statsService.getOverview(authReq.user.userId);
+  async getOverview() {
+    const overview = await this.statsService.getOverview(DEFAULT_USER_ID);
     return ApiResponse.success(overview);
   }
 
   @Get('emotion-curve')
   async getEmotionCurve(
-    @Req() req: express.Request,
     @Query('days') days = 30,
   ) {
-    const authReq = req as AuthRequest;
     const curve = await this.statsService.getEmotionCurve(
-      authReq.user.userId,
+      DEFAULT_USER_ID,
       +days,
     );
     return ApiResponse.success(curve);
@@ -36,13 +28,11 @@ export class StatsController {
 
   @Get('timeline')
   async getTimeline(
-    @Req() req: express.Request,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ) {
-    const authReq = req as AuthRequest;
     const timeline = await this.statsService.getTimeline(
-      authReq.user.userId,
+      DEFAULT_USER_ID,
       +page,
       +limit,
     );

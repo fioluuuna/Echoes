@@ -26,7 +26,7 @@ export function GlassButton({
     const isDark = theme === 'dark';
 
     const variants = {
-        primary: "glass-button bg-gradient-to-r from-[var(--accent-primary)] to-indigo-600 hover:from-[var(--accent-secondary)] hover:to-indigo-500 border-[var(--border-accent)] text-white shadow-lg shadow-purple-500/20",
+        primary: "glass-button bg-gradient-to-r from-[var(--accent-primary)] to-blue-600 hover:from-[var(--accent-secondary)] hover:to-blue-500 border-[var(--border-accent)] text-white shadow-lg shadow-sky-500/20",
         secondary: isDark
             ? "bg-white/10 hover:bg-white/20 border-white/10 text-white backdrop-blur-md shadow-sm"
             : "bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-900 backdrop-blur-md shadow-sm",

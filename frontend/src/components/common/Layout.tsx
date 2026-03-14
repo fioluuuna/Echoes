@@ -32,7 +32,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className={clsx(
                     "absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] animate-pulse-glow",
-                    isDark ? "bg-purple-900/20" : "bg-purple-200/40"
+                    isDark ? "bg-sky-900/20" : "bg-sky-200/40"
                 )} />
                 <div className={clsx(
                     "absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[150px] animate-pulse-glow",
@@ -56,7 +56,7 @@ export function Layout({ children }: LayoutProps) {
                 <div>
                     {/* Logo */}
                     <div className="px-6 mb-10 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20 shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
                             <Compass className="text-white w-6 h-6" />
                         </div>
                         <h1 className="text-xl font-bold tracking-tight hidden lg:block text-[var(--text-primary)]">

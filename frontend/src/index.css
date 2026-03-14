@@ -5,8 +5,8 @@
 .dark {
   /* 背景色 */
   --bg-primary: #0a0a0f;
-  --bg-secondary: #13111c;
-  --bg-tertiary: #1e1b2e;
+  --bg-secondary: #0d1522;
+  --bg-tertiary: #14243a;
   --bg-panel: rgba(255, 255, 255, 0.03);
   --bg-card: rgba(255, 255, 255, 0.05);
   --bg-hover: rgba(255, 255, 255, 0.08);
@@ -18,14 +18,14 @@
   --text-dim: #64748b;
 
   /* 强调色 */
-  --accent-primary: #8b5cf6;
-  --accent-secondary: #7c3aed;
-  --accent-glow: rgba(139, 92, 246, 0.5);
+  --accent-primary: #38bdf8;
+  --accent-secondary: #0ea5e9;
+  --accent-glow: rgba(56, 189, 248, 0.5);
 
   /* 边框 */
   --border-primary: rgba(255, 255, 255, 0.08);
   --border-secondary: rgba(255, 255, 255, 0.05);
-  --border-accent: rgba(139, 92, 246, 0.3);
+  --border-accent: rgba(56, 189, 248, 0.3);
 
   /* 玻璃效果 */
   --glass-surface: rgba(10, 10, 15, 0.6);
@@ -35,7 +35,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.3);
 
   /* 滚动条 */
   --scrollbar-track: transparent;
@@ -44,8 +44,8 @@
 
   /* 特殊元素 */
   --book-cover: #0c0c14;
-  --book-page: #1e1b2e;
-  --book-binding: #13111c;
+  --book-page: #14243a;
+  --book-binding: #0d1522;
 }
 
 /* ===== 浅色主题 (纸白色) ===== */
@@ -64,15 +64,15 @@
   --text-muted: #6b7280;
   --text-dim: #9ca3af;
 
-  /* 强调色 - 保持紫色但更柔和 */
-  --accent-primary: #7c3aed;
-  --accent-secondary: #6d28d9;
-  --accent-glow: rgba(124, 58, 237, 0.3);
+  /* 强调色 - 蓝色调 */
+  --accent-primary: #0ea5e9;
+  --accent-secondary: #0284c7;
+  --accent-glow: rgba(14, 165, 233, 0.3);
 
   /* 边框 */
   --border-primary: rgba(0, 0, 0, 0.08);
   --border-secondary: rgba(0, 0, 0, 0.05);
-  --border-accent: rgba(124, 58, 237, 0.3);
+  --border-accent: rgba(14, 165, 233, 0.3);
 
   /* 玻璃效果 */
   --glass-surface: rgba(255, 255, 255, 0.8);
@@ -82,7 +82,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.15);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.15);
 
   /* 滚动条 */
   --scrollbar-track: transparent;
@@ -220,6 +220,39 @@ body {
   background: var(--scrollbar-thumb-hover);
 }
 
+/* 自定义滚动条类 */
+.custom-scrollbar {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(138, 222, 250, 0.2);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 222, 250, 0.4);
+}
+
+/* 隐藏滚动条但保持滚动功能 */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* ===== 主题切换过渡 ===== */
 * {
   transition-property: background-color, border-color, color, fill, stroke;
@@ -231,4 +264,24 @@ body {
 .no-transition,
 .no-transition * {
   transition: none !important;
+}
+
+/* ===== 3D Flipbook Utils ===== */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.spin-slow {
+  animation: spin 30s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }

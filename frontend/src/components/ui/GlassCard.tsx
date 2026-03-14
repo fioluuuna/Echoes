@@ -18,13 +18,13 @@ export function GlassCard({ children, className, variant = 'default', ...props }
                 "glass-card rounded-2xl p-6",
                 variant === 'highlight' && (
                     isDark
-                        ? "bg-purple-900/20 border-purple-500/30 shadow-lg shadow-purple-500/10"
-                        : "bg-purple-50 border-purple-200 shadow-lg shadow-purple-500/10"
+                        ? "bg-sky-900/20 border-sky-500/30 shadow-lg shadow-sky-500/10"
+                        : "bg-sky-50 border-sky-200 shadow-lg shadow-sky-500/10"
                 ),
                 variant === 'interactive' && (
                     isDark
-                        ? "cursor-pointer hover:bg-white/10 hover:border-purple-500/30 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
-                        : "cursor-pointer hover:bg-white hover:border-purple-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                        ? "cursor-pointer hover:bg-white/10 hover:border-sky-500/30 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                        : "cursor-pointer hover:bg-white hover:border-sky-200 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
                 ),
                 className
             )}

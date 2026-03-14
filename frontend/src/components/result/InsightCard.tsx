@@ -16,27 +16,27 @@ export function InsightCard({ insight, keywords, imagery }: InsightCardProps) {
 
   return (
     <GlassCard className={clsx(
-      "bg-gradient-to-br",
+      "!bg-gradient-to-br backdrop-blur-md border",
       isDark
-        ? "from-indigo-900/30 to-purple-900/30 border-indigo-500/30"
-        : "from-indigo-50 to-purple-50 border-indigo-200"
+        ? "!from-[#05080f]/80 !to-[#0b162c]/80 border-[#8adefa]/20 shadow-[0_0_20px_rgba(138,222,250,0.1)]"
+        : "!from-blue-50 !to-sky-50 border-blue-200"
     )}>
       <div className={clsx(
-        "flex items-center gap-3 mb-4",
-        isDark ? "text-indigo-400" : "text-indigo-600"
+        "flex items-center gap-3 mb-6 border-b pb-4",
+        isDark ? "text-[#8adefa] border-[#8adefa]/10" : "text-blue-600 border-blue-100"
       )}>
-        <Lightbulb className="w-6 h-6" />
+        <Lightbulb className="w-6 h-6 drop-shadow-[0_0_5px_#8adefa]" />
         <h3 className={clsx(
-          "text-lg font-bold tracking-wide uppercase",
-          isDark ? "text-indigo-300" : "text-indigo-700"
+          "text-lg font-serif tracking-[0.2em] font-bold",
+          isDark ? "text-[#d0eaf8] drop-shadow-[0_0_5px_rgba(138,222,250,0.5)]" : "text-blue-700"
         )}>
-          心理洞察
+          灵迹洞察
         </h3>
       </div>
 
       <p className={clsx(
-        "leading-relaxed mb-8 text-lg font-light",
-        isDark ? "text-slate-300" : "text-gray-700"
+        "leading-[2rem] mb-8 text-lg font-serif tracking-wide",
+        isDark ? "text-[#e6f4fa]" : "text-gray-700"
       )}>
         {insight}
       </p>
@@ -45,12 +45,12 @@ export function InsightCard({ insight, keywords, imagery }: InsightCardProps) {
         {keywords.length > 0 && (
           <div>
             <div className={clsx(
-              "flex items-center gap-2 text-xs uppercase tracking-widest mb-3",
-              isDark ? "text-slate-400" : "text-gray-500"
+              "flex items-center gap-2 text-xs font-serif tracking-[0.2em] mb-3",
+              isDark ? "text-[#4c849e]" : "text-gray-500"
             )}>
-              <Hash className="w-3 h-3" /> 关键词
+              <Hash className="w-3 h-3" /> 星点
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {keywords.map((keyword, index) => (
                 <motion.span
                   key={keyword}
@@ -58,13 +58,13 @@ export function InsightCard({ insight, keywords, imagery }: InsightCardProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6 + index * 0.05 }}
                   className={clsx(
-                    "px-3 py-1.5 text-sm font-medium rounded-full border shadow-sm",
+                    "px-4 py-1.5 text-sm font-serif tracking-widest rounded border backdrop-blur-sm",
                     isDark
-                      ? "bg-indigo-900/50 border-indigo-500/50 text-indigo-300"
-                      : "bg-indigo-100 border-indigo-300 text-indigo-700"
+                      ? "bg-[#0b162c]/60 border-[#8adefa]/30 text-[#8adefa] shadow-[0_0_10px_rgba(138,222,250,0.1)] hover:bg-[#152a4a]/80 transition-colors"
+                      : "bg-blue-100 border-blue-300 text-blue-700"
                   )}
                 >
-                  #{keyword}
+                  {keyword}
                 </motion.span>
               ))}
             </div>
@@ -74,12 +74,12 @@ export function InsightCard({ insight, keywords, imagery }: InsightCardProps) {
         {imagery.length > 0 && (
           <div>
             <div className={clsx(
-              "flex items-center gap-2 text-xs uppercase tracking-widest mb-3",
-              isDark ? "text-slate-400" : "text-gray-500"
+              "flex items-center gap-2 text-xs font-serif tracking-[0.2em] mb-3",
+              isDark ? "text-[#4c849e]" : "text-gray-500"
             )}>
-              <Palette className="w-3 h-3" /> 意象
+              <Palette className="w-3 h-3" /> 幻象
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {imagery.map((img, index) => (
                 <motion.span
                   key={img}
@@ -87,9 +87,9 @@ export function InsightCard({ insight, keywords, imagery }: InsightCardProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.7 + index * 0.05 }}
                   className={clsx(
-                    "px-3 py-1 text-sm rounded-lg border transition-colors",
+                    "px-3 py-1 text-sm font-serif tracking-widest rounded border transition-colors",
                     isDark
-                      ? "bg-teal-900/50 border-teal-500/50 text-teal-300 hover:bg-teal-900/70"
+                      ? "bg-[#02050f]/60 border-[#7bb0c9]/30 text-[#7bb0c9] hover:text-[#8adefa] hover:border-[#8adefa]/50"
                       : "bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-100"
                   )}
                 >

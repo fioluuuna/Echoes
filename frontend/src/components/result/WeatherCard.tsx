@@ -20,21 +20,21 @@ export function WeatherCard({ weatherType, emotion, intensity }: WeatherCardProp
       case '晴朗': return <Sun className="w-12 h-12 text-amber-500" />;
       case '多云': return <CloudSun className="w-12 h-12 text-blue-500" />;
       case '阴天': return <Cloud className="w-12 h-12 text-gray-500" />;
-      case '小雨': return <CloudRain className="w-12 h-12 text-indigo-500" />;
+      case '小雨': return <CloudRain className="w-12 h-12 text-blue-500" />;
       case '大风': return <Wind className="w-12 h-12 text-teal-500" />;
-      default: return <Moon className="w-12 h-12 text-purple-500" />;
+      default: return <Moon className="w-12 h-12 text-sky-500" />;
     }
   };
 
   return (
     <GlassCard className={clsx(
       "flex flex-col items-center gap-6 py-8 relative overflow-hidden",
-      isDark ? "bg-slate-900/50" : "bg-white"
+      isDark ? "!bg-slate-900/50" : "!bg-white"
     )}>
       {/* Ambient Glow */}
       <div className={clsx(
         "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 blur-3xl rounded-full",
-        isDark ? "bg-purple-500/10" : "bg-primary-500/5"
+        isDark ? "bg-sky-500/10" : "bg-sky-500/5"
       )} />
 
       <motion.div
@@ -82,7 +82,7 @@ export function WeatherCard({ weatherType, emotion, intensity }: WeatherCardProp
             initial={{ width: 0 }}
             animate={{ width: `${intensity * 100}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]"
+            className="h-full bg-gradient-to-r from-sky-500 to-blue-500 shadow-[0_0_10px_rgba(56,189,248,0.3)]"
           />
         </div>
       </motion.div>

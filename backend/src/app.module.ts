@@ -18,12 +18,12 @@ import { StatsModule } from './stats/stats.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // 数据库配置 - 支持 PostgreSQL 和 SQLite
+    // 数据库配置 - 支持 MySQL、PostgreSQL 和 SQLite
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const dbType = configService.get('DB_TYPE', 'postgres');
+        const dbType = configService.get('DB_TYPE', 'mysql');
 
         // SQLite 配置（用于 ModelScope 部署）- 使用 sql.js
         if (dbType === 'sqlite') {
@@ -37,17 +37,33 @@ import { StatsModule } from './stats/stats.module';
           };
         }
 
-        // PostgreSQL 配置（本地开发）
+        // PostgreSQL 配置
+        if (dbType === 'postgres') {
+          return {
+            type: 'postgres',
+            host: configService.get('DB_HOST', 'localhost'),
+            port: configService.get('DB_PORT', 5432),
+            username: configService.get('DB_USERNAME', 'postgres'),
+            password: configService.get('DB_PASSWORD', ''),
+            database: configService.get('DB_DATABASE', 'xinling_diary'),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            logging: configService.get('NODE_ENV') === 'development',
+          };
+        }
+
+        // MySQL 配置（默认）
         return {
-          type: 'postgres',
+          type: 'mysql',
           host: configService.get('DB_HOST', 'localhost'),
-          port: configService.get('DB_PORT', 5432),
-          username: configService.get('DB_USERNAME', 'postgres'),
+          port: configService.get('DB_PORT', 3306),
+          username: configService.get('DB_USERNAME', 'root'),
           password: configService.get('DB_PASSWORD', ''),
           database: configService.get('DB_DATABASE', 'xinling_diary'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
           logging: configService.get('NODE_ENV') === 'development',
+          charset: 'utf8mb4',
         };
       },
     }),

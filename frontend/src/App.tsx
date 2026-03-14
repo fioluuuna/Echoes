@@ -1,28 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Layout } from './components/common/Layout';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BookLayout as Layout } from './components/common/BookLayout';
 import { HomePage } from './pages/HomePage';
 import { ResultPage } from './pages/ResultPage';
 import { LoginPage } from './pages/LoginPage';
 import { GardenPage } from './pages/GardenPage';
 import { TimelinePage } from './pages/TimelinePage';
-import { useAuthStore } from './stores/authStore';
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, _hasHydrated } = useAuthStore();
-
-  // 等待 hydration 完成
-  if (!_hasHydrated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-paper-warm">
-        <div className="text-ink-500">加载中...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  // temporarily bypass auth to show the 3D book cover directly
   return <Layout>{children}</Layout>;
 }
 

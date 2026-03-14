@@ -9,35 +9,67 @@ import { GlassButton } from '../components/ui/GlassButton';
 import { User, Mail, Lock, Sparkles, ArrowRight, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 
+interface SoulParticle {
+  id: number;
+  x: string;
+  startY: string;
+  targetY: string;
+  scale: number;
+  opacity: number;
+  duration: number;
+  width: string;
+  height: string;
+}
+
+function randomBetween(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+function createSoulParticles(): SoulParticle[] {
+  return Array.from({ length: 20 }, (_, index) => ({
+    id: index,
+    x: `${randomBetween(0, 100)}%`,
+    startY: `${randomBetween(0, 100)}%`,
+    targetY: `${randomBetween(-100, 0)}%`,
+    scale: randomBetween(0.2, 0.7),
+    opacity: randomBetween(0.1, 0.4),
+    duration: randomBetween(20, 30),
+    width: `${randomBetween(1, 5)}px`,
+    height: `${randomBetween(1, 5)}px`,
+  }));
+}
+
 // Particle component for "Soul Dust"
 const SoulParticles = ({ isDark }: { isDark: boolean }) => {
+  const [particles] = useState(createSoulParticles);
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((particle) => (
         <motion.div
-          key={i}
+          key={particle.id}
           className={clsx(
             "absolute rounded-full blur-[1px]",
-            isDark ? "bg-white/20" : "bg-purple-500/20"
+            isDark ? "bg-white/20" : "bg-sky-500/20"
           )}
           initial={{
-            x: Math.random() * 100 + "%",
-            y: Math.random() * 100 + "%",
-            scale: Math.random() * 0.5 + 0.2,
-            opacity: Math.random() * 0.3 + 0.1
+            x: particle.x,
+            y: particle.startY,
+            scale: particle.scale,
+            opacity: particle.opacity
           }}
           animate={{
-            y: [null, Math.random() * -100 + "%"],
-            opacity: [null, 0]
+            y: particle.targetY,
+            opacity: 0
           }}
           transition={{
-            duration: Math.random() * 10 + 20,
+            duration: particle.duration,
             repeat: Infinity,
             ease: "linear"
           }}
           style={{
-            width: Math.random() * 4 + 1 + "px",
-            height: Math.random() * 4 + 1 + "px",
+            width: particle.width,
+            height: particle.height,
           }}
         />
       ))}
@@ -127,7 +159,7 @@ export function LoginPage() {
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
           className={clsx(
             "absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full blur-[150px]",
-            isDark ? "bg-[#4A00E0]/10" : "bg-purple-300/30"
+            isDark ? "bg-[#0369a1]/10" : "bg-sky-300/30"
           )}
         />
         <motion.div
@@ -135,7 +167,7 @@ export function LoginPage() {
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className={clsx(
             "absolute -bottom-[20%] -right-[10%] w-[70%] h-[70%] rounded-full blur-[150px]",
-            isDark ? "bg-[#8E2DE2]/10" : "bg-indigo-300/30"
+            isDark ? "bg-[#0284c7]/10" : "bg-blue-300/30"
           )}
         />
         <SoulParticles isDark={isDark} />
@@ -155,7 +187,7 @@ export function LoginPage() {
             className="inline-flex mb-6 relative"
           >
             {/* Glowing Orb Logo */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#4A00E0] to-[#8E2DE2] flex items-center justify-center shadow-[0_0_50px_rgba(142,45,226,0.4)] relative">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0369a1] to-[#0284c7] flex items-center justify-center shadow-[0_0_50px_rgba(14,165,233,0.4)] relative">
               <div className="absolute inset-0 rounded-full bg-white/10 blur-xl animate-pulse-glow" />
               <Sparkles className="w-10 h-10 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
             </div>
@@ -230,8 +262,8 @@ export function LoginPage() {
                 className={clsx(
                   "!rounded-xl !h-12 !backdrop-blur-sm transition-all duration-500",
                   isDark
-                    ? "!bg-white/5 !border-white/5 focus:!border-purple-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
-                    : "!bg-black/5 !border-black/5 focus:!border-purple-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
+                    ? "!bg-white/5 !border-white/5 focus:!border-sky-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
+                    : "!bg-black/5 !border-black/5 focus:!border-sky-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
                 )}
               />
 
@@ -252,8 +284,8 @@ export function LoginPage() {
                     className={clsx(
                       "!rounded-xl !h-12 !backdrop-blur-sm transition-all duration-500",
                       isDark
-                        ? "!bg-white/5 !border-white/5 focus:!border-purple-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
-                        : "!bg-black/5 !border-black/5 focus:!border-purple-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
+                        ? "!bg-white/5 !border-white/5 focus:!border-sky-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
+                        : "!bg-black/5 !border-black/5 focus:!border-sky-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
                     )}
                   />
                   <GlassInput
@@ -264,8 +296,8 @@ export function LoginPage() {
                     className={clsx(
                       "!rounded-xl !h-12 !backdrop-blur-sm transition-all duration-500",
                       isDark
-                        ? "!bg-white/5 !border-white/5 focus:!border-purple-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
-                        : "!bg-black/5 !border-black/5 focus:!border-purple-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
+                        ? "!bg-white/5 !border-white/5 focus:!border-sky-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
+                        : "!bg-black/5 !border-black/5 focus:!border-sky-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
                     )}
                   />
                 </motion.div>
@@ -282,8 +314,8 @@ export function LoginPage() {
                 className={clsx(
                   "!rounded-xl !h-12 !backdrop-blur-sm transition-all duration-500",
                   isDark
-                    ? "!bg-white/5 !border-white/5 focus:!border-purple-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
-                    : "!bg-black/5 !border-black/5 focus:!border-purple-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
+                    ? "!bg-white/5 !border-white/5 focus:!border-sky-500/50 !text-slate-200 placeholder:!text-slate-600 hover:!bg-white/10"
+                    : "!bg-black/5 !border-black/5 focus:!border-sky-500/50 !text-gray-800 placeholder:!text-gray-400 hover:!bg-black/10"
                 )}
               />
             </div>
@@ -291,7 +323,7 @@ export function LoginPage() {
             <GlassButton
               type="submit"
               variant="primary"
-              className="w-full h-12 mt-8 text-sm tracking-widest uppercase bg-gradient-to-r from-[#4A00E0] to-[#8E2DE2] hover:opacity-90 shadow-[0_0_20px_rgba(142,45,226,0.3)] border-none"
+              className="w-full h-12 mt-8 text-sm tracking-widest uppercase bg-gradient-to-r from-[#0369a1] to-[#0284c7] hover:opacity-90 shadow-[0_0_20px_rgba(14,165,233,0.3)] border-none"
               isLoading={loading}
               icon={!loading && <ArrowRight className="w-4 h-4" />}
             >

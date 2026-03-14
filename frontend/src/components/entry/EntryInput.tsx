@@ -40,7 +40,7 @@ export function EntryInput({
       <motion.div
         animate={{
           boxShadow: isFocused
-            ? '0 0 0 2px rgba(139, 92, 246, 0.2)'
+            ? '0 0 0 2px rgba(56, 189, 248, 0.2)'
             : '0 0 0 0px rgba(0,0,0,0)',
         }}
         className={clsx(

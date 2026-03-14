@@ -72,8 +72,8 @@ export function PresetTasks({ onSelect }: PresetTasksProps) {
                   <div className={clsx(
                     "p-1.5 rounded-lg transition-colors",
                     isDark
-                      ? "bg-purple-900/50 text-purple-400 group-hover:text-purple-300"
-                      : "bg-purple-100 text-purple-600 group-hover:text-purple-700"
+                      ? "bg-sky-900/50 text-sky-400 group-hover:text-sky-300"
+                      : "bg-sky-100 text-sky-600 group-hover:text-sky-700"
                   )}>
                     <Icon className="w-4 h-4" />
                   </div>

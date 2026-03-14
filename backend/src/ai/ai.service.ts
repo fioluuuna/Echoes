@@ -22,8 +22,15 @@ export class AiService {
   private readonly apiKey: string;
   private readonly baseUrl = 'https://dashscope.aliyuncs.com/api/v1';
 
+  // 豆包API配置
+  private readonly doubaoApiKey: string;
+  private readonly doubaoModel: string;
+  private readonly doubaoBaseUrl = 'https://ark.cn-beijing.volces.com/api/v3';
+
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get('DASHSCOPE_API_KEY', '');
+    this.doubaoApiKey = this.configService.get('DOUBAO_API_KEY', '');
+    this.doubaoModel = this.configService.get('DOUBAO_MODEL', 'doubao-seed-2-0-pro-260215');
   }
 
   // 情感分析（支持图片）
@@ -273,5 +280,158 @@ ${passageContent}
       weatherType: '多云',
       psychologicalInsight: '每一次记录都是与自己对话的机会。',
     };
+  }
+
+  /**
+   * AI场景生图 - 使用豆包API
+   * @param prompt 场景描述
+   * @param style 风格（可选）
+   * @returns 生成的图片URL
+   */
+  async generateSceneImage(
+    prompt: string,
+    style?: string,
+  ): Promise<{ imageUrl: string; taskId: string }> {
+    this.logger.log(`开始生成场景图片: ${prompt}`);
+
+    // 构建增强的prompt，添加艺术风格
+    const enhancedPrompt = this.buildImagePrompt(prompt, style);
+
+    try {
+      // 调用豆包API生成图片
+      const response = await axios.post(
+        `${this.doubaoBaseUrl}/images/generations`,
+        {
+          model: this.doubaoModel,
+          prompt: enhancedPrompt,
+          size: '1024x1024',
+          n: 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.doubaoApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          timeout: 60000, // 60秒超时
+        },
+      );
+
+      this.logger.log('豆包API响应:', JSON.stringify(response.data));
+
+      // 解析响应获取图片URL
+      const imageUrl = response.data?.data?.[0]?.url;
+      if (!imageUrl) {
+        throw new Error('无法获取生成的图片URL');
+      }
+
+      return { imageUrl, taskId: Date.now().toString() };
+    } catch (error: any) {
+      this.logger.error('图片生成失败', error?.response?.data || error);
+      throw new Error('图片生成失败，请稍后重试');
+    }
+  }
+
+  /**
+   * 轮询图片生成结果
+   */
+  private async pollImageResult(
+    taskId: string,
+    maxAttempts = 60,
+  ): Promise<string> {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      await this.sleep(2000); // 每2秒轮询一次
+
+      try {
+        const response = await axios.get(
+          `${this.baseUrl}/tasks/${taskId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.apiKey}`,
+            },
+            timeout: 10000,
+          },
+        );
+
+        const status = response.data?.output?.task_status;
+        this.logger.log(`任务 ${taskId} 状态: ${status}`);
+
+        if (status === 'SUCCEEDED') {
+          const results = response.data?.output?.results;
+          if (results && results.length > 0 && results[0].url) {
+            return results[0].url;
+          }
+          throw new Error('图片结果为空');
+        }
+
+        if (status === 'FAILED') {
+          const errorMsg =
+            response.data?.output?.message || '图片生成失败';
+          throw new Error(errorMsg);
+        }
+
+        // PENDING 或 RUNNING 状态继续等待
+      } catch (error) {
+        if (attempt === maxAttempts - 1) {
+          throw error;
+        }
+      }
+    }
+
+    throw new Error('图片生成超时');
+  }
+
+  /**
+   * 构建增强的图片生成prompt
+   */
+  private buildImagePrompt(prompt: string, style?: string): string {
+    // 基础艺术风格描述
+    const styleMap: Record<string, string> = {
+      watercolor: '水彩画风格，柔和的色彩过渡，梦幻朦胧',
+      oil: '油画风格，厚重的笔触，丰富的色彩层次',
+      anime: '日系动漫风格，精致的线条，明亮的色彩',
+      realistic: '写实风格，高清细节，自然光影',
+      fantasy: '奇幻风格，魔幻元素，绚丽的光效',
+      minimalist: '极简风格，简洁的构图，留白艺术',
+    };
+
+    const styleDesc = style && styleMap[style] ? styleMap[style] : '艺术插画风格，温暖治愈的氛围';
+
+    return `${prompt}，${styleDesc}，高质量，精美细节，4K分辨率`;
+  }
+
+  /**
+   * 根据日记内容生成场景描述
+   */
+  async generateScenePrompt(
+    content: string,
+    emotion: string,
+    keywords: string[],
+    imagery: string[],
+  ): Promise<string> {
+    const prompt = `你是一个专业的AI绘画提示词专家。请根据以下日记内容，生成一段适合AI绘画的场景描述。
+
+日记内容：
+"""
+${content}
+"""
+
+主要情绪：${emotion}
+关键词：${keywords.join('、')}
+意象：${imagery.join('、')}
+
+要求：
+1. 生成一段50-100字的场景描述
+2. 描述要具体、有画面感
+3. 包含环境、光影、氛围等元素
+4. 不要包含人物的具体面部特征
+5. 只返回场景描述，不要有其他内容`;
+
+    try {
+      return await this.callQwen(prompt);
+    } catch (error) {
+      this.logger.error('生成场景描述失败', error);
+      // 返回基于关键词的默认描述
+      return `${imagery.join('，')}，${emotion}的氛围，温暖治愈的场景`;
+    }
   }
 }

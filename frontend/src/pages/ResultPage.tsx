@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { WeatherCard } from '../components/result/WeatherCard';
+import { EmotionCard } from '../components/result/EmotionCard';
 import { PassageCard } from '../components/result/PassageCard';
 import { InsightCard } from '../components/result/InsightCard';
 import { GardenUpdateCard } from '../components/result/GardenUpdateCard';
+import { AuthorModal } from '../components/result/AuthorModal';
 import { Loading } from '../components/common/Loading';
 import { GlassButton } from '../components/ui/GlassButton';
 import { useEntryStore } from '../stores/entryStore';
 import { useThemeStore } from '../stores/themeStore';
 import { entryApi } from '../services/api';
-import type { CreateEntryResponse } from '../types';
+import type { CreateEntryResponse, MatchResult } from '../types';
 import { ArrowLeft, BookOpen, Flower2 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -21,6 +22,7 @@ export function ResultPage() {
   const { theme } = useThemeStore();
   const [loading, setLoading] = useState(false);
   const [activeMatch, setActiveMatch] = useState(0);
+  const [selectedMatch, setSelectedMatch] = useState<MatchResult | null>(null);
 
   const isDark = theme === 'dark';
 
@@ -55,8 +57,8 @@ export function ResultPage() {
   if (!currentResult) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 text-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)]">未找到日记</h2>
-        <p className="text-[var(--text-muted)]">你寻找的日记似乎已经消失在虚空中。</p>
+        <h2 className="text-2xl font-bold text-[#d0eaf8]">未找到日记</h2>
+        <p className="text-[#7bb0c9]">你寻找的日记似乎已经消失在虚空中。</p>
         <Link to="/">
           <GlassButton variant="secondary">返回首页</GlassButton>
         </Link>
@@ -90,10 +92,9 @@ export function ResultPage() {
         </button>
       </motion.div>
 
-      {/* Header Section */}
-      <section className="space-y-8">
-        <WeatherCard
-          weatherType={entry.weatherType}
+      {/* Header Section - 情绪卡片（替代天气卡片） */}
+      <section className="space-y-12">
+        <EmotionCard
           emotion={entry.emotionPrimary}
           intensity={entry.emotionIntensity}
         />
@@ -102,18 +103,22 @@ export function ResultPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-center px-4"
+          className="text-center px-4 relative"
         >
+          {/* 装饰性背景光晕 */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#8adefa]/5 blur-[50px] rounded-full pointer-events-none" />
+          
           <QuoteIcon className={clsx(
-            "w-8 h-8 mx-auto mb-4",
-            isDark ? "text-slate-600" : "text-gray-300"
+            "w-8 h-8 mx-auto mb-6 drop-shadow-[0_0_8px_rgba(138,222,250,0.3)]",
+            isDark ? "text-[#4c849e]/60" : "text-gray-300"
           )} />
           <p className={clsx(
-            "text-lg font-serif italic leading-relaxed",
-            isDark ? "text-slate-300" : "text-gray-600"
+            "text-xl md:text-2xl font-serif italic leading-[2.5rem] tracking-wide relative z-10",
+            isDark ? "text-[#d0eaf8] drop-shadow-md text-shadow-[0_0_15px_rgba(138,222,250,0.2)]" : "text-gray-600"
           )}>
             "{entry.content}"
           </p>
+          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#8adefa]/30 to-transparent mx-auto mt-8" />
         </motion.div>
       </section>
 
@@ -123,25 +128,34 @@ export function ResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-center mb-8"
+          className="text-center mb-10"
         >
-          <div className="flex items-center justify-center gap-2 mb-2 text-[var(--accent-primary)]">
+          <div className={clsx(
+            "flex items-center justify-center gap-2 mb-3",
+            isDark ? "text-[#8adefa] drop-shadow-[0_0_5px_rgba(138,222,250,0.5)]" : "text-sky-600"
+          )}>
             <BookOpen className="w-5 h-5" />
-            <span className="text-sm font-bold tracking-widest uppercase">文学共鸣</span>
+            <span className="text-sm font-serif font-bold tracking-[0.2em] uppercase">文学共鸣</span>
           </div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+          <h2 className={clsx(
+            "text-3xl font-serif font-bold tracking-widest",
+            isDark ? "text-[#e6f4fa] drop-shadow-[0_0_10px_rgba(138,222,250,0.3)]" : "text-gray-900"
+          )}>
             来自过去的回响
           </h2>
         </motion.div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {matches.length > 0 ? (
             matches.map((match, index) => (
               <PassageCard
                 key={match.passage.id}
                 match={match}
                 isActive={activeMatch === index}
-                onClick={() => setActiveMatch(index)}
+                onClick={() => {
+                  setActiveMatch(index);
+                  setSelectedMatch(match);
+                }}
               />
             ))
           ) : (
@@ -151,7 +165,7 @@ export function ResultPage() {
                 ? "bg-white/5 border-white/10"
                 : "bg-gray-50 border-gray-200"
             )}>
-              <p className="text-[var(--text-muted)]">暂未找到共鸣。</p>
+              <p className="text-[#7bb0c9]">暂未找到共鸣。</p>
             </div>
           )}
         </div>
@@ -201,6 +215,15 @@ export function ResultPage() {
           </GlassButton>
         </Link>
       </motion.div>
+
+      {/* 诗人详情弹窗 */}
+      <AuthorModal
+        isOpen={!!selectedMatch}
+        onClose={() => setSelectedMatch(null)}
+        author={selectedMatch?.passage.author || null}
+        work={selectedMatch?.passage.work || null}
+        passageContent={selectedMatch?.passage.content || ''}
+      />
     </div>
   );
 }

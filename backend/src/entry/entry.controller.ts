@@ -6,31 +6,23 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
-  Req,
   ParseIntPipe,
 } from '@nestjs/common';
-import * as express from 'express';
 import { EntryService } from './entry.service';
 import { CreateEntryDto } from './dto/create-entry.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiResponse } from '../common/dto/api-response.dto';
 
-// 扩展 Request 类型
-interface AuthRequest extends express.Request {
-  user: { userId: number; username: string };
-}
+// 默认用户ID（移除登录后使用）
+const DEFAULT_USER_ID = 1;
 
 @Controller('entries')
-@UseGuards(JwtAuthGuard)
 export class EntryController {
   constructor(private entryService: EntryService) { }
 
   @Post()
-  async createEntry(@Req() req: express.Request, @Body() createEntryDto: CreateEntryDto) {
-    const authReq = req as AuthRequest;
+  async createEntry(@Body() createEntryDto: CreateEntryDto) {
     const result = await this.entryService.createEntry(
-      authReq.user.userId,
+      DEFAULT_USER_ID,
       createEntryDto,
     );
     return ApiResponse.success(result, '记录成功');
@@ -38,13 +30,11 @@ export class EntryController {
 
   @Get()
   async getUserEntries(
-    @Req() req: express.Request,
     @Query('page') page = 1,
     @Query('limit') limit = 20,
   ) {
-    const authReq = req as AuthRequest;
     const result = await this.entryService.getUserEntries(
-      authReq.user.userId,
+      DEFAULT_USER_ID,
       +page,
       +limit,
     );
@@ -53,11 +43,9 @@ export class EntryController {
 
   @Get(':id')
   async getEntryById(
-    @Req() req: express.Request,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const authReq = req as AuthRequest;
-    const entry = await this.entryService.getEntryById(id, authReq.user.userId);
+    const entry = await this.entryService.getEntryById(id, DEFAULT_USER_ID);
     if (!entry) {
       return ApiResponse.notFound('日记不存在');
     }
@@ -66,11 +54,9 @@ export class EntryController {
 
   @Delete(':id')
   async deleteEntry(
-    @Req() req: express.Request,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    const authReq = req as AuthRequest;
-    const success = await this.entryService.deleteEntry(id, authReq.user.userId);
+    const success = await this.entryService.deleteEntry(id, DEFAULT_USER_ID);
     if (!success) {
       return ApiResponse.notFound('日记不存在');
     }

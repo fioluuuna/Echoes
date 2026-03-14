@@ -31,8 +31,8 @@ export const GlassInput = forwardRef<HTMLInputElement, GlassInputProps>(
                         className={clsx(
                             "w-full glass-input rounded-xl py-2.5 transition-all duration-300",
                             isDark
-                                ? "bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30"
-                                : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50",
+                                ? "bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/30"
+                                : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50",
                             icon ? "pl-10 pr-4" : "px-4",
                             error ? "border-red-400 focus:border-red-500" : "",
                             className

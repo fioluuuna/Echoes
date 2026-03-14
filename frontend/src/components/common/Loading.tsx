@@ -18,8 +18,8 @@ export function Loading() {
         className="flex flex-col items-center gap-6"
       >
         <div className="relative">
-          <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full" />
-          <Loader2 className="w-12 h-12 text-purple-500 animate-spin relative z-10" />
+          <div className="absolute inset-0 bg-sky-500/20 blur-xl rounded-full" />
+          <Loader2 className="w-12 h-12 text-sky-500 animate-spin relative z-10" />
         </div>
         <motion.p
           initial={{ opacity: 0 }}
@@ -40,7 +40,7 @@ export function Loading() {
 export function LoadingInline() {
   return (
     <div className="flex items-center justify-center py-8">
-      <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+      <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
     </div>
   );
 }

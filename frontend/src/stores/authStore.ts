@@ -1,47 +1,31 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { User } from '../types';
 
+// 默认用户（移除登录后使用）
+const DEFAULT_USER: User = {
+  id: 1,
+  username: 'default',
+  email: 'default@example.com',
+  nickname: '观测者',
+  avatar: null,
+  createdAt: new Date().toISOString(),
+};
+
 interface AuthState {
-  user: User | null;
-  token: string | null;
+  user: User;
   isAuthenticated: boolean;
-  _hasHydrated: boolean;
-  setAuth: (user: User, token: string) => void;
   logout: () => void;
-  setHasHydrated: (state: boolean) => void;
+  setAuth: (user: User, token: string) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      _hasHydrated: false,
-
-      setAuth: (user, token) => {
-        console.log('[AuthStore] setAuth called, token:', token ? `${token.substring(0, 20)}...` : 'null');
-        localStorage.setItem('token', token);
-        console.log('[AuthStore] Token saved to localStorage, verify:', localStorage.getItem('token')?.substring(0, 20));
-        set({ user, token, isAuthenticated: true });
-      },
-
-      logout: () => {
-        localStorage.removeItem('token');
-        set({ user: null, token: null, isAuthenticated: false });
-      },
-
-      setHasHydrated: (state) => {
-        set({ _hasHydrated: state });
-      },
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
-      },
-    }
-  )
-);
+export const useAuthStore = create<AuthState>()((set) => ({
+  user: DEFAULT_USER,
+  isAuthenticated: true,
+  logout: () => {
+    // 不做任何操作，保持登录状态
+  },
+  setAuth: (user: User, token: string) => {
+    localStorage.setItem('token', token);
+    set({ user, isAuthenticated: true });
+  },
+}));
