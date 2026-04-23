@@ -65,11 +65,13 @@ git clone https://github.com/fioluuuna/Echoes.git
 cd Echoes
 cp .env.example .env   # 填入你的阿里云通义千问 API Key
 docker compose up --build
+# 打开 http://localhost:3000
 ```
 
 ##📂 项目结构与文档
 项目前后端分离，模块化设计。更详细的架构图、API设计和数据库Schema，请见 /docs 目录。
 
+```
 Echoes/
 ├── frontend/          # React 前端应用
 ├── backend/           # NestJS 后端 API
@@ -81,6 +83,7 @@ Echoes/
 ├── docs/              # 📂 详细技术文档
 ├── .env.example       # 环境变量模板
 └── README.md
+```
 
 ---
 
