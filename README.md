@@ -72,7 +72,7 @@
 
 ## 🏗️ 技术架构
 
-···mermaid
+```mermaid
 graph TB
     A[用户输入日记] --> B{多维语义解析}
     B --> C[情感识别]
@@ -84,7 +84,7 @@ graph TB
     H --> I[多维度精排序]
     I --> J[匹配结果 + 解释生成]
     J --> K[用户获得共鸣]
-···
+```
 
     | 层级 | 技术选型 |
     |------|---------|
@@ -96,7 +96,6 @@ graph TB
 
 
 🚀 快速开始
-bash
 git clone https://github.com/fioluuuna/Echoes.git
 cd Echoes
 cp .env.example .env  # 填入阿里云通义千问 API Key
@@ -105,8 +104,6 @@ docker compose up --build
 
 🔮 下一步计划
 叙事级隐私保护：引入 Narrative Privacy 框架，在分析情感的同时对敏感细节进行不可逆模糊
-
-离线模式：完全本地运行，数据不出设备
 
 文学库扩充：覆盖更多文化背景的作者与作品
 
@@ -122,7 +119,7 @@ Echoes/
 └── .env.example
 
 🙋 关于我
-研究方向：人本人工智能——情感计算、计算心理健康、AI隐私保护。
+兴趣方向：人本人工智能——情感计算、计算心理健康、AI隐私保护。
 
 正在做的事：
 
@@ -173,8 +170,6 @@ docker compose up --build
 
 🔮 Roadmap
 Narrative-level privacy protection
-
-Offline mode (fully local)
 
 Expanded literary database
 
