@@ -65,10 +65,9 @@ git clone https://github.com/fioluuuna/Echoes.git
 cd Echoes
 cp .env.example .env   # 填入你的阿里云通义千问 API Key
 docker compose up --build
-# 打开 http://localhost:3000
 ```
 
-📂 项目结构与文档
+##📂 项目结构与文档
 项目前后端分离，模块化设计。更详细的架构图、API设计和数据库Schema，请见 /docs 目录。
 
 Echoes/
@@ -83,19 +82,30 @@ Echoes/
 ├── .env.example       # 环境变量模板
 └── README.md
 
-##🔮 下一步计划
-叙事级隐私保护：引入我正在研究的 Narrative Privacy 框架
+---
 
-文学库扩充：覆盖更多文化背景的作者与作品
+## 🔮 下一步计划
 
-英文版适配：让非中文用户也能跨时空共鸣
+- [ ] **叙事级隐私保护**：引入正在研究的 Narrative Privacy 框架
+- [ ] **文学库扩充**：覆盖更多文化背景的作者与作品
+- [ ] **英文版适配**：让非中文用户也能跨时空共鸣
 
-🙋 关于我
+---
+
+## 🙋 关于我
+
 温州肯恩大学 计算机科学（辅修数学）学生。
-兴趣方向：人本人工智能 —— 情感计算、计算心理健康、AI隐私保护。
+
+兴趣方向：**人本人工智能** —— 情感计算、计算心理健康、AI隐私保护。
+
 正在推进：叙事隐私保护的形式化定义、LLM混合情绪理解、Echoes持续开发。
 
 📧 fioluuuna@gmail.com
 
-📜 许可证与致谢
-本项目基于 Apache License 2.0 开源。感谢阿里云 ModelScope 平台、通义千问模型，以及高校黑客松北京2026的评委与用户反馈。
+---
+
+## 📜 许可证与致谢
+
+本项目基于 Apache License 2.0 开源。
+
+感谢阿里云 ModelScope 平台、通义千问模型，以及高校黑客松北京2026的评委与用户反馈。
