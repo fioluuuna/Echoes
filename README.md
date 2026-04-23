@@ -85,6 +85,7 @@ graph TB
     I --> J[匹配结果 + 解释生成]
     J --> K[用户获得共鸣]
 
+
 | 层级 | 技术选型 |
 |------|---------|
 | 前端 | React + TypeScript + TailwindCSS |
