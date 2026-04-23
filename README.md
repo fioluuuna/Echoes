@@ -72,10 +72,21 @@ docker compose up --build
 
 ##  📂 项目结构与文档
 
-项目前后端分离，模块化设计。
-更详细的架构图、API设计和数据库Schema，请见 /docs 目录。
-
+```mermaid
+graph TB
+    A[用户输入日记] --> B{多维语义解析}
+    B --> C[情感识别]
+    B --> D[意象提取]
+    B --> E[主题识别]
+    B --> F[场景理解]
+    C & D & E & F --> G[生成查询向量]
+    G --> H[文学库向量检索]
+    H --> I[多维度精排序]
+    I --> J[匹配结果 + 解释生成]
+    J --> K[用户获得共鸣]
 ```
+
+```markdown
 Echoes/
 ├── frontend/          # React 前端应用
 ├── backend/           # NestJS 后端 API
