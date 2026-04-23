@@ -480,9 +480,8 @@ ${passageContent}
 ${content}
 """
 
-主要情绪：${emotion}
-关键词：${keywords.join('、')}
-意象：${imagery.join('、')}
+关键词：${(keywords || []).join('、')}
+意象：${(imagery || []).join('、')}
 
 要求：
 1. 生成一段50-100字的场景描述

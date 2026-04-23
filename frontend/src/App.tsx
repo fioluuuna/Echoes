@@ -1,14 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { BookLayout as Layout } from './components/common/BookLayout';
 import { HomePage } from './pages/HomePage';
 import { ResultPage } from './pages/ResultPage';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import { GardenPage } from './pages/GardenPage';
 import { TimelinePage } from './pages/TimelinePage';
 
-// Protected Route Wrapper
+// Protected Route Wrapper - 未登录跳转到 /login
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // temporarily bypass auth to show the 3D book cover directly
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
   return <Layout>{children}</Layout>;
 }
 
@@ -17,6 +21,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Routes inside Layout */}
         <Route

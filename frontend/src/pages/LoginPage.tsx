@@ -199,10 +199,10 @@ export function LoginPage() {
               ? "text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70"
               : "text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-600"
           )}>
-            心灵奇记
+            Echoes
           </h1>
           <p className="text-[var(--text-muted)] font-light tracking-widest uppercase text-xs">
-            让心灵找到归属
+            你此刻的感受，有人在另一个时空早已懂得。
           </p>
         </div>
 
@@ -338,7 +338,7 @@ export function LoginPage() {
           transition={{ delay: 1 }}
           className="text-center text-[var(--text-dim)] text-[10px] mt-12 tracking-widest uppercase"
         >
-          开启你的内心探索之旅
+         寻找与你心灵共鸣的回音
         </motion.p>
       </motion.div>
     </div>

@@ -12,7 +12,7 @@ interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: 'light', // 默认浅色主题
+      theme: 'dark', // 默认深色主题
 
       toggleTheme: () => {
         const newTheme = get().theme === 'dark' ? 'light' : 'dark';
@@ -61,6 +61,11 @@ export function initializeTheme() {
       updateDocumentTheme('light');
     }
   } else {
-    updateDocumentTheme('light');
+    updateDocumentTheme('dark');
   }
 }
+
+// 强制初始化：清除旧缓存，默认深色
+localStorage.removeItem('theme-storage');
+document.documentElement.classList.add('dark');
+document.documentElement.classList.remove('light');
