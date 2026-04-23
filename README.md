@@ -72,7 +72,7 @@
 
 ## 🏗️ 技术架构
 
-```mermaid
+···mermaid
 graph TB
     A[用户输入日记] --> B{多维语义解析}
     B --> C[情感识别]
@@ -84,15 +84,16 @@ graph TB
     H --> I[多维度精排序]
     I --> J[匹配结果 + 解释生成]
     J --> K[用户获得共鸣]
+···
 
+    | 层级 | 技术选型 |
+    |------|---------|
+    | 前端 | React + TypeScript + TailwindCSS |
+    | 后端 | NestJS (Node.js) |
+    | AI分析 | 通义千问 Qwen-Max / Qwen-VL-Max / text-embedding-v3 |
+    | 数据存储 | PostgreSQL + pgvector 向量检索 |
+    | 部署 | Docker |
 
-| 层级 | 技术选型 |
-|------|---------|
-| 前端 | React + TypeScript + TailwindCSS |
-| 后端 | NestJS (Node.js) |
-| AI分析 | 通义千问 Qwen-Max / Qwen-VL-Max / text-embedding-v3 |
-| 数据存储 | PostgreSQL + pgvector 向量检索 |
-| 部署 | Docker |
 
 🚀 快速开始
 bash
