@@ -24,6 +24,9 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT ?? 3000;
+    // 设置请求体大小限制（50MB），解决 "request entity too large" 问题
+  app.use(require('express').json({ limit: '50mb' }));
+  app.use(require('express').urlencoded({ limit: '50mb', extended: true }));
   await app.listen(port);
   console.log(`🚀 心灵奇记后端服务已启动: http://localhost:${port}`);
 }

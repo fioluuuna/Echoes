@@ -50,6 +50,7 @@ export class EntryService {
       themes: analysis.themes,
       weatherType: analysis.weatherType,
       psychologicalInsight: analysis.psychologicalInsight,
+      imageUrl: images?.[0] || undefined,
     });
     const savedEntry = await this.entryRepository.save(entry);
 

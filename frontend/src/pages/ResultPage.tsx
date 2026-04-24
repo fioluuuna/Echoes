@@ -33,7 +33,10 @@ export function ResultPage() {
         .then((response) => {
           if (response.code === 200 && response.data) {
             const result: CreateEntryResponse = {
-              entry: response.data,
+              entry: {
+                ...response.data,
+                images: response.data.imageUrl ? [response.data.imageUrl] : [],
+              },
               analysis: {
                 emotions: [],
                 keywords: response.data.keywords || [],
@@ -117,6 +120,19 @@ export function ResultPage() {
             isDark ? "text-[#d0eaf8] drop-shadow-md text-shadow-[0_0_15px_rgba(138,222,250,0.2)]" : "text-gray-600"
           )}>
             "{entry.content}"
+                      {/* 用户上传的图片 */}
+          {entry.images && entry.images.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
+              {entry.images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`日记图片 ${idx + 1}`}
+                  className="max-w-[200px] max-h-[200px] rounded-lg object-cover border border-white/10"
+                />
+              ))}
+            </div>
+          )}
           </p>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#8adefa]/30 to-transparent mx-auto mt-8" />
         </motion.div>

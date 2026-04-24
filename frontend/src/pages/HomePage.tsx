@@ -6,6 +6,32 @@ import { entryApi } from '../services/api';
 import { useEntryStore } from '../stores/entryStore';
 import { Image as ImageIcon, X } from 'lucide-react';
 
+// 压缩图片
+function compressImage(file: File, maxWidth = 800, quality = 0.6): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 interface Sticker {
   id: string;
   url: string;
@@ -22,11 +48,10 @@ export function HomePage() {
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 当 draftContent 改变时，填充到输入框
   useEffect(() => {
     if (draftContent) {
       setContent(draftContent);
-      setDraftContent(null); // 清空模板内容，避免重复填充
+      setDraftContent(null);
     }
   }, [draftContent, setDraftContent]);
 
@@ -37,19 +62,23 @@ export function HomePage() {
     setLoading(true);
     try {
       const images = stickers.map(s => s.url);
-      const mainImage = images.length > 0 ? images[0] : undefined;
 
       const response = await entryApi.create({
         content,
-        imageUrl: mainImage,
         images: images.length > 0 ? images : undefined,
         emotionPrimary: draftEmotion || undefined,
       });
 
       if (response.code === 200 && response.data) {
-        setCurrentResult(response.data);
-        navigate(`/result/${response.data.entry.id}`);
-        // 可以选择在这里清理 emotion，例如 setDraftEmotion(null);
+        const resultWithImages = {
+          ...response.data,
+          entry: {
+            ...response.data.entry,
+            images: response.data.entry.imageUrl ? [response.data.entry.imageUrl] : [],
+          },
+        };
+        setCurrentResult(resultWithImages);
+        navigate(`/result/${resultWithImages.entry.id}`);
       }
     } catch (error: any) {
       console.error('Failed to create entry:', error);
@@ -63,20 +92,16 @@ export function HomePage() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const newSticker: Sticker = {
-            id: Math.random().toString(36).substr(2, 9),
-            url: event.target.result as string,
-            x: Math.random() * 200 + 50,
-            y: Math.random() * 200 + 100,
-            rotation: Math.random() * 20 - 10,
-          };
-          setStickers(prev => [...prev, newSticker]);
-        }
-      };
-      reader.readAsDataURL(file);
+      compressImage(file).then(url => {
+        const newSticker: Sticker = {
+          id: Math.random().toString(36).substr(2, 9),
+          url,
+          x: Math.random() * 200 + 50,
+          y: Math.random() * 200 + 100,
+          rotation: Math.random() * 20 - 10,
+        };
+        setStickers(prev => [...prev, newSticker]);
+      });
     }
   };
 
@@ -93,24 +118,20 @@ export function HomePage() {
     if (files.length > 0) {
       const file = files[0];
       if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left - 75;
-            const y = e.clientY - rect.top - 75;
+        compressImage(file).then(url => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left - 75;
+          const y = e.clientY - rect.top - 75;
 
-            const newSticker: Sticker = {
-              id: Math.random().toString(36).substr(2, 9),
-              url: event.target.result as string,
-              x: Math.max(0, x),
-              y: Math.max(0, y),
-              rotation: Math.random() * 20 - 10,
-            };
-            setStickers(prev => [...prev, newSticker]);
-          }
-        };
-        reader.readAsDataURL(file);
+          const newSticker: Sticker = {
+            id: Math.random().toString(36).substr(2, 9),
+            url,
+            x: Math.max(0, x),
+            y: Math.max(0, y),
+            rotation: Math.random() * 20 - 10,
+          };
+          setStickers(prev => [...prev, newSticker]);
+        });
       }
     }
   };
@@ -126,12 +147,10 @@ export function HomePage() {
 
       <div className="h-full flex flex-col relative" style={{ transformStyle: 'preserve-3d' }}>
         
-        {/* Content Area */}
         <div className="relative z-10 p-2 md:p-4 flex-1 flex flex-col justify-between"
              onDrop={handleDrop}
              onDragOver={handleDragOver}>
 
-            {/* Writing Area */}
             <motion.div 
                className="flex-1 relative z-20 group"
                initial={{ opacity: 0, scale: 0.95 }}
@@ -154,7 +173,6 @@ export function HomePage() {
               />
             </motion.div>
 
-            {/* Footer & Actions */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -162,7 +180,6 @@ export function HomePage() {
               style={{ transform: "translateZ(30px)" }}
               className="flex items-center justify-between mt-8 pt-4 border-t border-[#8adefa]/20"
             >
-              {/* Word Count & Add Image */}
               <div className="flex items-center gap-6">
                 <div className="text-sm font-serif flex gap-4 items-center opacity-80 tracking-widest text-[#7bb0c9]">
                   <span>共聚 {content.length} 灵迹</span>
@@ -185,7 +202,6 @@ export function HomePage() {
                 </div>
               </div>
 
-              {/* Cosmic Glow Button */}
               <button
                 onClick={handleSubmit}
                 disabled={content.length < 1 || isLoading}
@@ -196,7 +212,6 @@ export function HomePage() {
             </motion.div>
           </div>
 
-          {/* Render floating stickers directly on the page */}
           {stickers.map((sticker) => (
             <motion.div
               key={sticker.id}

@@ -78,6 +78,7 @@ export interface Entry {
   imagery?: string[];
   scenes?: string[];
   weatherType: string;
+  images?: string[];
   psychologicalInsight?: string;
   createdAt: string;
   matches?: MatchResult[];
