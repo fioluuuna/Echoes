@@ -18,15 +18,17 @@ export NODE_ENV=production
 export PORT=3000
 export DB_TYPE=sqlite
 export DB_PATH=${APP_DIR}/data/xinling_diary.db
-# JWT_SECRET: 优先使用 ModelScope 平台注入的值，否则使用默认值
-export JWT_SECRET=${JWT_SECRET:-xinling_diary_jwt_secret_2026}
+# JWT_SECRET: 必须由 ModelScope 平台环境变量注入
+if [ -z "${JWT_SECRET}" ]; then
+    echo "缺少 JWT_SECRET，请在 ModelScope 创空间的环境变量中配置一个随机长字符串"
+    exit 1
+fi
 export JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
 # DASHSCOPE_API_KEY: 保留平台注入的值
 export DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}
 
-# 打印当前使用的 JWT_SECRET（用于调试）
-echo "当前 JWT_SECRET: ${JWT_SECRET:0:15}..."
-echo "当前 DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:0:10}..."
+echo "JWT_SECRET 已配置"
+echo "DASHSCOPE_API_KEY: $([ -n "${DASHSCOPE_API_KEY}" ] && echo 已配置 || echo 未配置)"
 
 # 创建 .env 文件确保 ConfigModule 能读取到正确的值
 cat > ${APP_DIR}/backend/.env << EOF
